@@ -4,8 +4,12 @@
 </head>
 <body>
 <h1>Hello from Fly</h1>
+<p>Worker is running.</p>
 {{ if .Region }}
 <h2>I'm running in the {{.Region}} region</h2>
-{{end}}
+{{ else }}
+<h2>Region: local</h2>
+{{ end }}
+<p><a href="/app">Open benchmark UI</a></p>
 </body>
 </html>
