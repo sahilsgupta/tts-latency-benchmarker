@@ -10,6 +10,10 @@ const (
 	ProviderDeepgram   SupportedProvider = "deepgram"
 	ProviderMurf       SupportedProvider = "murf"
 	ProviderPolly      SupportedProvider = "polly"
+	ProviderRime       SupportedProvider = "rime"
+	ProviderSarvam     SupportedProvider = "sarvam"
+	ProviderGoogle     SupportedProvider = "google"
+	ProviderResemble   SupportedProvider = "resemble"
 )
 
 // APIConfig holds user-supplied configuration for a single TTS API

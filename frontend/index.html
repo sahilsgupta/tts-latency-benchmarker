@@ -44,7 +44,10 @@
   <section>
     <h2>Test config</h2>
     <label for="text">Text to synthesize</label>
-    <textarea id="text" rows="3">Hello, this is a test of text to speech latency.</textarea>
+    <div style="display:flex;gap:0.5rem;align-items:flex-start;flex-wrap:wrap;">
+      <textarea id="text" rows="3" style="flex:1;min-width:200px;">Hello, this is a test of text to speech latency.</textarea>
+      <button type="button" id="random-text" title="Fill with a random sample sentence">Random text</button>
+    </div>
     <label style="margin-top:0.75rem;">Regions</label>
     <div class="regions" id="regions"></div>
     <button type="button" id="run" style="margin-top:0.75rem;">Run benchmark</button>
@@ -58,12 +61,24 @@
 
   <script>
     const REGIONS = [
+      { code: 'ams', label: 'Amsterdam 🇳🇱' },
+      { code: 'arn', label: 'Stockholm 🇸🇪' },
       { code: 'bom', label: 'Mumbai 🇮🇳' },
+      { code: 'cdg', label: 'Paris 🇫🇷' },
+      { code: 'dfw', label: 'Dallas 🇺🇸' },
+      { code: 'ewr', label: 'Secaucus, NJ 🇺🇸' },
       { code: 'fra', label: 'Frankfurt 🇩🇪' },
-      { code: 'sin', label: 'Singapore 🇸🇬' },
+      { code: 'gru', label: 'São Paulo 🇧🇷' },
       { code: 'iad', label: 'Virginia 🇺🇸' },
+      { code: 'jnb', label: 'Johannesburg 🇿🇦' },
       { code: 'lax', label: 'Los Angeles 🇺🇸' },
+      { code: 'lhr', label: 'London 🇬🇧' },
+      { code: 'nrt', label: 'Tokyo 🇯🇵' },
+      { code: 'ord', label: 'Chicago 🇺🇸' },
+      { code: 'sin', label: 'Singapore 🇸🇬' },
+      { code: 'sjc', label: 'San Jose 🇺🇸' },
       { code: 'syd', label: 'Sydney 🇦🇺' },
+      { code: 'yyz', label: 'Toronto 🇨🇦' },
     ];
 
     const PROVIDERS = [
@@ -73,6 +88,36 @@
       { value: 'deepgram', label: 'Deepgram' },
       { value: 'murf', label: 'Murf' },
       { value: 'polly', label: 'AWS Polly' },
+      { value: 'rime', label: 'Rime' },
+      { value: 'sarvam', label: 'Sarvam' },
+      { value: 'google', label: 'Google' },
+      { value: 'resemble', label: 'Resemble AI' },
+    ];
+
+    const PROVIDER_DEFAULTS = {
+      elevenlabs: { voiceId: '21m00Tcm4TlvDq8ikWAM', model: 'eleven_flash_v2_5' },
+      openai:     { voiceId: 'alloy', model: 'tts-1' },
+      cartesia:   { voiceId: 'f786b574-daa5-4673-aa0c-cbe3e8534c02', model: 'sonic-3' },
+      deepgram:   { voiceId: '', model: 'aura-asteria-en' },
+      murf:       { voiceId: 'Matthew', model: 'FALCON' },
+      polly:      { voiceId: 'Joanna', model: 'neural' },
+      rime:       { voiceId: 'celeste', model: 'mistv2' },
+      sarvam:     { voiceId: 'shubh', model: 'bulbul:v3' },
+      google:     { voiceId: 'en-US-Neural2-A', model: 'en-US' },
+      resemble:   { voiceId: '', model: 'chatterbox-turbo' },
+    };
+
+    const SAMPLE_TEXTS = [
+      'Hello, this is a test of text to speech latency.',
+      'The quick brown fox jumps over the lazy dog.',
+      'In the year 2025, voice technology continues to transform how we interact with machines.',
+      'Please leave a message after the beep. We will return your call as soon as possible.',
+      'Numbers like 42, 3.14, and 1,000,000 can be tricky for some voices to pronounce correctly.',
+      'How much wood would a woodchuck chuck if a woodchuck could chuck wood?',
+      'She sells seashells by the seashore. The shells she sells are surely seashells.',
+      'Artificial intelligence and machine learning are driving the next wave of innovation.',
+      'Your session will expire in fifteen minutes. Please save your work.',
+      'Welcome to the support line. For sales, press one. For technical support, press two.',
     ];
 
     const BASE_URL = (window.location.protocol === 'https:' || window.location.protocol === 'http:')
@@ -80,6 +125,11 @@
       : 'https://tts-benchmarker.fly.dev';
 
     let apiCardId = 0;
+
+    function pickRandomText() {
+      const textEl = document.getElementById('text');
+      if (textEl) textEl.value = SAMPLE_TEXTS[Math.floor(Math.random() * SAMPLE_TEXTS.length)];
+    }
 
     function renderRegions() {
       const wrap = document.getElementById('regions');
@@ -135,10 +185,22 @@
         </div>
       `;
       const providerSelect = card.querySelector('[data-field="provider"]');
+      const voiceIdInput = card.querySelector('[data-field="voiceId"]');
+      const modelInput = card.querySelector('[data-field="model"]');
       const secretRowEl = card.querySelector('.api-secret-row');
-      providerSelect.addEventListener('change', () => {
-        if (secretRowEl) secretRowEl.classList.toggle('hidden', !needsApiSecret(providerSelect.value));
-      });
+
+      function applyProviderDefaults(provider) {
+        const d = PROVIDER_DEFAULTS[provider];
+        if (d) {
+          if (voiceIdInput) voiceIdInput.value = d.voiceId || '';
+          if (modelInput) modelInput.value = d.model || '';
+        }
+        if (secretRowEl) secretRowEl.classList.toggle('hidden', !needsApiSecret(provider));
+      }
+
+      providerSelect.addEventListener('change', () => applyProviderDefaults(providerSelect.value));
+      applyProviderDefaults(providerSelect.value);
+
       card.querySelector('[data-remove]').addEventListener('click', () => card.remove());
       return card;
     }
@@ -343,6 +405,7 @@
 
     document.getElementById('add-api').addEventListener('click', addApiCard);
     document.getElementById('run').addEventListener('click', runBenchmark);
+    document.getElementById('random-text').addEventListener('click', pickRandomText);
 
     renderRegions();
     addApiCard();
