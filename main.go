@@ -9,7 +9,7 @@ import (
 	"os"
 	"sync"
 
-	"github.com/fly-apps/go-example/providers"
+	"tts-benchmarker/providers"
 )
 
 //go:embed templates/*
@@ -154,6 +154,14 @@ func getProvider(p providers.SupportedProvider) (providers.TTSProvider, bool) {
 		return providers.Murf{}, true
 	case providers.ProviderPolly:
 		return providers.Polly{}, true
+	case providers.ProviderRime:
+		return providers.Rime{}, true
+	case providers.ProviderSarvam:
+		return providers.Sarvam{}, true
+	case providers.ProviderGoogle:
+		return providers.Google{}, true
+	case providers.ProviderResemble:
+		return providers.Resemble{}, true
 	default:
 		return nil, false
 	}

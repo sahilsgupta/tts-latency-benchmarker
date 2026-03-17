@@ -1,3 +1,3 @@
-module github.com/fly-apps/go-example
+module tts-benchmarker
 
 go 1.22

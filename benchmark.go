@@ -5,7 +5,7 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/fly-apps/go-example/providers"
+	"tts-benchmarker/providers"
 )
 
 func getRegion() string {
