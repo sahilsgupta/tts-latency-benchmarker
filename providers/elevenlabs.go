@@ -9,7 +9,7 @@ import (
 const (
 	elevenLabsBaseURL   = "https://api.elevenlabs.io/v1/text-to-speech"
 	elevenLabsDefaultVoice = "21m00Tcm4TlvDq8ikWAM"
-	elevenLabsDefaultModel = "eleven_turbo_v2"
+	elevenLabsDefaultModel = "eleven_flash_v2_5"
 )
 
 type elevenLabsRequest struct {

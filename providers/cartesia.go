@@ -8,8 +8,10 @@ import (
 
 const (
 	cartesiaBaseURL      = "https://api.cartesia.ai/tts/bytes"
-	cartesiaDefaultModel = "sonic-english"
-	cartesiaVersion      = "2024-06-10"
+	cartesiaDefaultModel = "sonic-3"
+	cartesiaVersion      = "2025-04-16"
+	// Default voice (Katie) when none provided; Cartesia requires a valid UUID.
+	cartesiaDefaultVoiceID = "f786b574-daa5-4673-aa0c-cbe3e8534c02"
 )
 
 type cartesiaRequest struct {
@@ -36,7 +38,7 @@ type Cartesia struct{}
 func (Cartesia) Call(config APIConfig, text string) (TTSStreamResult, error) {
 	voiceID := config.VoiceID
 	if voiceID == "" {
-		voiceID = "default"
+		voiceID = cartesiaDefaultVoiceID
 	}
 	model := config.Model
 	if model == "" {
@@ -66,7 +68,7 @@ func (Cartesia) Call(config APIConfig, text string) (TTSStreamResult, error) {
 		return TTSStreamResult{}, err
 	}
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("X-API-Key", config.APIKey)
+	req.Header.Set("Authorization", "Bearer "+config.APIKey)
 	req.Header.Set("Cartesia-Version", cartesiaVersion)
 
 	return MeasureStream(req)
