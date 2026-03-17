@@ -1,0 +1,8 @@
+# Build output
+tts-benchmarker
+/go-example
+
+# Go
+*.exe
+*.test
+*.out
