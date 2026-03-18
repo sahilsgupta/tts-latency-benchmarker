@@ -107,6 +107,288 @@
       resemble:   { voiceId: '', model: 'chatterbox-turbo' },
     };
 
+    const CUSTOM_OPT = '__custom__';
+
+    const PROVIDER_VOICES = {
+      elevenlabs: [
+        { v: '21m00Tcm4TlvDq8ikWAM', l: 'Rachel' },
+        { v: 'EXAVITQu4vr4xnSDxMaL', l: 'Sarah' },
+        { v: 'AZnzlk1XvdvUeBnXmlld', l: 'Domi' },
+        { v: 'VR6AewLTigWG4xSOukaG', l: 'Arnold' },
+        { v: 'pNInz6obpgDQGcFmaJgB', l: 'Adam' },
+      ],
+      openai: [
+        { v: 'alloy', l: 'Alloy' },
+        { v: 'echo', l: 'Echo' },
+        { v: 'fable', l: 'Fable' },
+        { v: 'onyx', l: 'Onyx' },
+        { v: 'nova', l: 'Nova' },
+        { v: 'shimmer', l: 'Shimmer' },
+      ],
+      cartesia: [
+        { v: 'f786b574-daa5-4673-aa0c-cbe3e8534c02', l: 'Katie' },
+        { v: '228fca29-3a0a-435c-8728-5cb483251068', l: 'Kiefer' },
+        { v: '6ccbfb76-1fc6-48f7-b71d-91ac6298247b', l: 'Tessa' },
+        { v: 'c961b81c-a935-4c17-bfb3-ba2239de8c2f', l: 'Kyle' },
+      ],
+      deepgram: [{ v: '', l: '(voice not used — model only)' }],
+      /* Murf: FALCON uses short IDs; GEN2 uses locale-prefixed IDs (see Murf voice library). */
+      murf: [
+        { v: 'Matthew', l: 'Matthew (Falcon)' },
+        { v: 'Alicia', l: 'Alicia (Falcon)' },
+        { v: 'Alina', l: 'Alina (Falcon)' },
+        { v: 'Amara', l: 'Amara (Falcon)' },
+        { v: 'Angela', l: 'Angela (Falcon)' },
+        { v: 'Caleb', l: 'Caleb (Falcon)' },
+        { v: 'Daisy', l: 'Daisy (Falcon)' },
+        { v: 'Delilah', l: 'Delilah (Falcon)' },
+        { v: 'Ken', l: 'Ken (Falcon)' },
+        { v: 'River', l: 'River (Falcon)' },
+        { v: 'Ronnie', l: 'Ronnie (Falcon)' },
+        { v: 'Zion', l: 'Zion (Falcon)' },
+        { v: 'en-US-natalie', l: 'Natalie (Gen2)' },
+        { v: 'en-US-miles', l: 'Miles (Gen2)' },
+        { v: 'en-US-terrell', l: 'Terrell (Gen2)' },
+        { v: 'en-US-amara', l: 'Amara (Gen2)' },
+        { v: 'en-US-ken', l: 'Ken (Gen2)' },
+        { v: 'en-US-zion', l: 'Zion (Gen2)' },
+        { v: 'en-US-daisy', l: 'Daisy (Gen2)' },
+        { v: 'en-US-river', l: 'River (Gen2)' },
+        { v: 'en-US-caleb', l: 'Caleb (Gen2)' },
+        { v: 'en-US-delilah', l: 'Delilah (Gen2)' },
+        { v: 'en-US-angela', l: 'Angela (Gen2)' },
+        { v: 'en-US-alicia', l: 'Alicia (Gen2)' },
+      ],
+      polly: [
+        { v: 'Joanna', l: 'Joanna' },
+        { v: 'Matthew', l: 'Matthew' },
+        { v: 'Amy', l: 'Amy' },
+        { v: 'Salli', l: 'Salli' },
+        { v: 'Justin', l: 'Justin' },
+        { v: 'Kimberly', l: 'Kimberly' },
+        { v: 'Ivy', l: 'Ivy' },
+        { v: 'Kendra', l: 'Kendra' },
+        { v: 'Joey', l: 'Joey' },
+        { v: 'Ruth', l: 'Ruth' },
+      ],
+      rime: [
+        { v: 'celeste', l: 'Celeste' },
+        { v: 'luna', l: 'Luna' },
+        { v: 'esther', l: 'Esther' },
+        { v: 'orion', l: 'Orion' },
+      ],
+      /* v2 and v3 use different speaker sets (Sarvam docs). */
+      sarvam: [
+        { v: 'shubh', l: 'Shubh (v3)' },
+        { v: 'priya', l: 'Priya (v3)' },
+        { v: 'ritu', l: 'Ritu (v3)' },
+        { v: 'roopa', l: 'Roopa (v3)' },
+        { v: 'aditya', l: 'Aditya (v3)' },
+        { v: 'neha', l: 'Neha (v3)' },
+        { v: 'rahul', l: 'Rahul (v3)' },
+        { v: 'anushka', l: 'Anushka (v2)' },
+        { v: 'arya', l: 'Arya (v2)' },
+        { v: 'vidya', l: 'Vidya (v2)' },
+        { v: 'manisha', l: 'Manisha (v2)' },
+        { v: 'hitesh', l: 'Hitesh (v2)' },
+        { v: 'karun', l: 'Karun (v2)' },
+        { v: 'abhilash', l: 'Abhilash (v2)' },
+      ],
+      google: [
+        { v: 'en-US-Neural2-A', l: 'en-US Neural2 A' },
+        { v: 'en-US-Neural2-C', l: 'en-US Neural2 C' },
+        { v: 'en-US-Neural2-D', l: 'en-US Neural2 D' },
+        { v: 'en-US-Neural2-F', l: 'en-US Neural2 F' },
+        { v: 'en-GB-Neural2-A', l: 'en-GB Neural2 A' },
+        { v: 'en-GB-Neural2-B', l: 'en-GB Neural2 B' },
+        { v: 'en-GB-Neural2-C', l: 'en-GB Neural2 C' },
+        { v: 'en-GB-Neural2-D', l: 'en-GB Neural2 D' },
+        { v: 'en-GB-Neural2-F', l: 'en-GB Neural2 F' },
+        { v: 'en-IN-Neural2-A', l: 'en-IN Neural2 A' },
+        { v: 'en-IN-Neural2-B', l: 'en-IN Neural2 B' },
+        { v: 'hi-IN-Neural2-A', l: 'hi-IN Neural2 A' },
+        { v: 'hi-IN-Neural2-B', l: 'hi-IN Neural2 B' },
+        { v: 'hi-IN-Neural2-C', l: 'hi-IN Neural2 C' },
+        { v: 'hi-IN-Neural2-D', l: 'hi-IN Neural2 D' },
+      ],
+      resemble: [
+        { v: CUSTOM_OPT, l: 'Custom voice UUID…' },
+      ],
+    };
+
+    const PROVIDER_MODELS = {
+      elevenlabs: [
+        { v: 'eleven_flash_v2_5', l: 'Flash v2.5 (default)' },
+        { v: 'eleven_turbo_v2_5', l: 'Turbo v2.5' },
+        { v: 'eleven_multilingual_v2', l: 'Multilingual v2' },
+        { v: 'eleven_turbo_v2', l: 'Turbo v2' },
+      ],
+      openai: [
+        { v: 'tts-1', l: 'tts-1' },
+        { v: 'tts-1-hd', l: 'tts-1-hd' },
+      ],
+      cartesia: [
+        { v: 'sonic-3', l: 'Sonic 3' },
+        { v: 'sonic-turbo', l: 'Sonic Turbo' },
+      ],
+      deepgram: [
+        { v: 'aura-asteria-en', l: 'Aura Asteria (en)' },
+        { v: 'aura-luna-en', l: 'Aura Luna (en)' },
+        { v: 'aura-stella-en', l: 'Aura Stella (en)' },
+        { v: 'aura-athena-en', l: 'Aura Athena (en)' },
+      ],
+      murf: [
+        { v: 'FALCON', l: 'FALCON (low latency)' },
+        { v: 'GEN2', l: 'GEN2' },
+      ],
+      polly: [
+        { v: 'neural', l: 'Neural' },
+        { v: 'standard', l: 'Standard' },
+      ],
+      rime: [
+        { v: 'mistv2', l: 'Mist v2 (fast)' },
+        { v: 'arcana', l: 'Arcana' },
+        { v: 'mist', l: 'Mist' },
+      ],
+      sarvam: [
+        { v: 'bulbul:v3', l: 'Bulbul v3' },
+        { v: 'bulbul:v2', l: 'Bulbul v2' },
+      ],
+      google: [
+        { v: 'en-US', l: 'English (US)' },
+        { v: 'en-GB', l: 'English (UK)' },
+        { v: 'en-IN', l: 'English (India)' },
+        { v: 'hi-IN', l: 'Hindi (India)' },
+      ],
+      resemble: [
+        { v: 'chatterbox-turbo', l: 'Chatterbox Turbo' },
+        { v: '', l: 'Default (voice default)' },
+      ],
+    };
+
+    /** Voice IDs allowed per model (provider → model id → voice ids). Omitted model → all voices. */
+    const MODEL_VOICE_IDS = {
+      google: {
+        'en-US': ['en-US-Neural2-A', 'en-US-Neural2-C', 'en-US-Neural2-D', 'en-US-Neural2-F'],
+        'en-GB': ['en-GB-Neural2-A', 'en-GB-Neural2-B', 'en-GB-Neural2-C', 'en-GB-Neural2-D', 'en-GB-Neural2-F'],
+        'en-IN': ['en-IN-Neural2-A', 'en-IN-Neural2-B'],
+        'hi-IN': ['hi-IN-Neural2-A', 'hi-IN-Neural2-B', 'hi-IN-Neural2-C', 'hi-IN-Neural2-D'],
+      },
+      polly: {
+        neural: ['Joanna', 'Matthew', 'Amy', 'Salli', 'Justin', 'Kimberly'],
+        standard: ['Ivy', 'Joanna', 'Kendra', 'Kimberly', 'Salli', 'Joey', 'Justin', 'Matthew', 'Ruth'],
+      },
+      sarvam: {
+        'bulbul:v3': ['shubh', 'aditya', 'ritu', 'priya', 'neha', 'rahul', 'pooja', 'rohan', 'simran', 'kavya', 'amit', 'dev', 'ishita', 'shreya', 'ratan', 'varun', 'manan', 'sumit', 'roopa', 'kabir', 'aayan', 'ashutosh', 'advait', 'amelia', 'sophia', 'anand', 'tanya', 'tarun', 'sunny', 'mani', 'gokul', 'vijay', 'shruti', 'suhani', 'mohit', 'kavitha', 'rehan', 'soham', 'rupali'],
+        'bulbul:v2': ['anushka', 'arya', 'vidya', 'manisha', 'hitesh', 'karun', 'abhilash'],
+      },
+      rime: {
+        mistv2: ['celeste', 'luna', 'esther', 'orion'],
+        arcana: ['celeste', 'luna', 'esther', 'orion'],
+        mist: ['celeste', 'luna', 'esther', 'orion'],
+      },
+      murf: {
+        FALCON: ['Matthew', 'Alicia', 'Alina', 'Amara', 'Angela', 'Caleb', 'Daisy', 'Delilah', 'Ken', 'River', 'Ronnie', 'Zion'],
+        GEN2: ['en-US-natalie', 'en-US-miles', 'en-US-terrell', 'en-US-amara', 'en-US-ken', 'en-US-zion', 'en-US-daisy', 'en-US-river', 'en-US-caleb', 'en-US-delilah', 'en-US-angela', 'en-US-alicia'],
+      },
+      cartesia: {
+        'sonic-3': ['f786b574-daa5-4673-aa0c-cbe3e8534c02', '228fca29-3a0a-435c-8728-5cb483251068', '6ccbfb76-1fc6-48f7-b71d-91ac6298247b', 'c961b81c-a935-4c17-bfb3-ba2239de8c2f'],
+        'sonic-turbo': ['f786b574-daa5-4673-aa0c-cbe3e8534c02', '228fca29-3a0a-435c-8728-5cb483251068', '6ccbfb76-1fc6-48f7-b71d-91ac6298247b', 'c961b81c-a935-4c17-bfb3-ba2239de8c2f'],
+      },
+      elevenlabs: {
+        eleven_flash_v2_5: ['21m00Tcm4TlvDq8ikWAM', 'EXAVITQu4vr4xnSDxMaL', 'AZnzlk1XvdvUeBnXmlld', 'VR6AewLTigWG4xSOukaG', 'pNInz6obpgDQGcFmaJgB'],
+        eleven_turbo_v2_5: ['21m00Tcm4TlvDq8ikWAM', 'EXAVITQu4vr4xnSDxMaL', 'AZnzlk1XvdvUeBnXmlld', 'VR6AewLTigWG4xSOukaG', 'pNInz6obpgDQGcFmaJgB'],
+        eleven_multilingual_v2: ['21m00Tcm4TlvDq8ikWAM', 'EXAVITQu4vr4xnSDxMaL', 'AZnzlk1XvdvUeBnXmlld', 'VR6AewLTigWG4xSOukaG', 'pNInz6obpgDQGcFmaJgB'],
+        eleven_turbo_v2: ['21m00Tcm4TlvDq8ikWAM', 'EXAVITQu4vr4xnSDxMaL', 'AZnzlk1XvdvUeBnXmlld', 'VR6AewLTigWG4xSOukaG', 'pNInz6obpgDQGcFmaJgB'],
+      },
+      openai: {
+        'tts-1': ['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer'],
+        'tts-1-hd': ['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer'],
+      },
+    };
+
+    /** Default voice when switching to this model (per provider). */
+    const MODEL_DEFAULT_VOICE = {
+      google: {
+        'en-US': 'en-US-Neural2-A',
+        'en-GB': 'en-GB-Neural2-A',
+        'en-IN': 'en-IN-Neural2-A',
+        'hi-IN': 'hi-IN-Neural2-A',
+      },
+      polly: { neural: 'Joanna', standard: 'Joanna' },
+      sarvam: { 'bulbul:v3': 'shubh', 'bulbul:v2': 'anushka' },
+      rime: { mistv2: 'celeste', arcana: 'celeste', mist: 'celeste' },
+      murf: { FALCON: 'Matthew', GEN2: 'en-US-natalie' },
+      cartesia: { 'sonic-3': 'f786b574-daa5-4673-aa0c-cbe3e8534c02', 'sonic-turbo': 'f786b574-daa5-4673-aa0c-cbe3e8534c02' },
+      elevenlabs: {
+        eleven_flash_v2_5: '21m00Tcm4TlvDq8ikWAM',
+        eleven_turbo_v2_5: '21m00Tcm4TlvDq8ikWAM',
+        eleven_multilingual_v2: '21m00Tcm4TlvDq8ikWAM',
+        eleven_turbo_v2: '21m00Tcm4TlvDq8ikWAM',
+      },
+      openai: { 'tts-1': 'alloy', 'tts-1-hd': 'alloy' },
+    };
+
+    function voiceOptionsFor(provider, modelSelectValue) {
+      if (provider === 'resemble') {
+        return [{ v: CUSTOM_OPT, l: 'Custom voice UUID…' }];
+      }
+      const all = PROVIDER_VOICES[provider] || [];
+      if (provider === 'deepgram') {
+        return [{ v: '', l: '(voice not used — model only)' }];
+      }
+      if (modelSelectValue === CUSTOM_OPT) {
+        return all.length ? [...all] : [{ v: '', l: 'Default' }];
+      }
+      const map = MODEL_VOICE_IDS[provider];
+      if (!map || !map[modelSelectValue]) {
+        return all.length ? [...all] : [{ v: '', l: 'Default' }];
+      }
+      const byV = new Map(all.map(o => [o.v, o]));
+      return map[modelSelectValue].map(v => byV.get(v) || { v, l: v });
+    }
+
+    function defaultVoiceForModel(provider, effectiveModel, modelSelectValue) {
+      const opts = voiceOptionsFor(provider, modelSelectValue);
+      if (!opts.length) return '';
+      const d = PROVIDER_DEFAULTS[provider] || {};
+      if (provider === 'deepgram') return '';
+      if (modelSelectValue === CUSTOM_OPT) {
+        return opts.some(o => o.v === d.voiceId) ? d.voiceId : opts[0].v;
+      }
+      const md = MODEL_DEFAULT_VOICE[provider];
+      if (md && effectiveModel && md[effectiveModel] !== undefined) {
+        const v = md[effectiveModel];
+        if (opts.some(o => o.v === v)) return v;
+      }
+      if (opts.some(o => o.v === d.voiceId)) return d.voiceId;
+      return opts[0].v;
+    }
+
+    function fillSelect(sel, options, defaultVal, includeCustom) {
+      const opts = [...(options || [])];
+      if (includeCustom && !opts.some(o => o.v === CUSTOM_OPT)) {
+        opts.push({ v: CUSTOM_OPT, l: 'Custom…' });
+      }
+      let html = opts.map(o => `<option value="${escapeAttr(o.v)}">${escapeHtml(o.l)}</option>`).join('');
+      sel.innerHTML = html;
+      const match = opts.find(o => o.v === defaultVal);
+      if (match) {
+        sel.value = defaultVal;
+      } else if (defaultVal && includeCustom) {
+        sel.value = CUSTOM_OPT;
+      } else if (opts.length) {
+        sel.value = opts[0].v;
+      }
+    }
+
+    function escapeAttr(s) {
+      return String(s).replace(/"/g, '&quot;').replace(/</g, '');
+    }
+    function escapeHtml(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
     const SAMPLE_TEXTS = [
       'Hello, this is a test of text to speech latency.',
       'The quick brown fox jumps over the lazy dog.',
@@ -172,12 +454,20 @@
         </div>
         ${secretRow}
         <div class="row">
-          <label>Voice ID</label>
-          <input type="text" data-field="voiceId" placeholder="Voice ID">
+          <label>Voice</label>
+          <select data-field="voiceIdSelect"></select>
+        </div>
+        <div class="row voice-custom-row hidden">
+          <label>Custom voice ID / UUID</label>
+          <input type="text" data-field="voiceIdCustom" placeholder="Paste voice ID or UUID">
         </div>
         <div class="row">
           <label>Model</label>
-          <input type="text" data-field="model" placeholder="Model (optional)">
+          <select data-field="modelSelect"></select>
+        </div>
+        <div class="row model-custom-row hidden">
+          <label>Custom model</label>
+          <input type="text" data-field="modelCustom" placeholder="Model id">
         </div>
         <div class="row">
           <label>Concurrency (1–50)</label>
@@ -185,19 +475,72 @@
         </div>
       `;
       const providerSelect = card.querySelector('[data-field="provider"]');
-      const voiceIdInput = card.querySelector('[data-field="voiceId"]');
-      const modelInput = card.querySelector('[data-field="model"]');
+      const voiceSel = card.querySelector('[data-field="voiceIdSelect"]');
+      const modelSel = card.querySelector('[data-field="modelSelect"]');
+      const voiceCustom = card.querySelector('[data-field="voiceIdCustom"]');
+      const modelCustom = card.querySelector('[data-field="modelCustom"]');
+      const voiceCustomRow = card.querySelector('.voice-custom-row');
+      const modelCustomRow = card.querySelector('.model-custom-row');
       const secretRowEl = card.querySelector('.api-secret-row');
 
+      function syncCustomRows() {
+        const isResemble = providerSelect.value === 'resemble';
+        if (isResemble) {
+          voiceCustom.placeholder = 'Resemble voice UUID (required)';
+          return;
+        }
+        voiceCustomRow.classList.toggle('hidden', voiceSel.value !== CUSTOM_OPT);
+        modelCustomRow.classList.toggle('hidden', modelSel.value !== CUSTOM_OPT);
+      }
+
+      function refillVoicesForModel() {
+        const provider = providerSelect.value;
+        const modelVal = modelSel.value;
+        const d = PROVIDER_DEFAULTS[provider] || {};
+        if (provider === 'resemble') {
+          voiceSel.classList.add('hidden');
+          voiceSel.innerHTML = `<option value="${CUSTOM_OPT}">UUID below</option>`;
+          voiceCustom.value = '';
+          voiceCustomRow.classList.remove('hidden');
+          syncCustomRows();
+          return;
+        }
+        voiceSel.classList.remove('hidden');
+        const effectiveModel = modelVal === CUSTOM_OPT
+          ? (modelCustom.value.trim() || d.model || '')
+          : modelVal;
+        const voices = voiceOptionsFor(provider, modelVal);
+        const defV = defaultVoiceForModel(provider, effectiveModel, modelVal);
+        fillSelect(voiceSel, voices, defV, true);
+        voiceCustom.value = '';
+        syncCustomRows();
+      }
+
       function applyProviderDefaults(provider) {
-        const d = PROVIDER_DEFAULTS[provider];
-        if (d) {
-          if (voiceIdInput) voiceIdInput.value = d.voiceId || '';
-          if (modelInput) modelInput.value = d.model || '';
+        const d = PROVIDER_DEFAULTS[provider] || {};
+        let models = PROVIDER_MODELS[provider];
+        if (!models || !models.length) {
+          models = [{ v: d.model || '', l: 'Default' }];
+        }
+        fillSelect(modelSel, models, d.model, true);
+        modelCustom.value = '';
+
+        if (provider === 'resemble') {
+          voiceSel.classList.add('hidden');
+          voiceSel.innerHTML = `<option value="${CUSTOM_OPT}">UUID below</option>`;
+          voiceCustom.value = d.voiceId || '';
+          voiceCustomRow.classList.remove('hidden');
+          syncCustomRows();
+        } else {
+          refillVoicesForModel();
         }
         if (secretRowEl) secretRowEl.classList.toggle('hidden', !needsApiSecret(provider));
       }
 
+      voiceSel.addEventListener('change', syncCustomRows);
+      modelSel.addEventListener('change', () => {
+        refillVoicesForModel();
+      });
       providerSelect.addEventListener('change', () => applyProviderDefaults(providerSelect.value));
       applyProviderDefaults(providerSelect.value);
 
@@ -212,13 +555,27 @@
     function collectApis() {
       const cards = document.querySelectorAll('#api-cards .card');
       return Array.from(cards).map(card => {
+        const provider = card.querySelector('[data-field="provider"]')?.value || 'elevenlabs';
+        const vSel = card.querySelector('[data-field="voiceIdSelect"]');
+        const mSel = card.querySelector('[data-field="modelSelect"]');
+        const vCust = card.querySelector('[data-field="voiceIdCustom"]');
+        const mCust = card.querySelector('[data-field="modelCustom"]');
+        let voiceId = '';
+        let model = '';
+        if (provider === 'resemble') {
+          voiceId = (vCust?.value || '').trim();
+          model = mSel?.value === CUSTOM_OPT ? (mCust?.value || '').trim() : (mSel?.value || '');
+        } else {
+          voiceId = vSel?.value === CUSTOM_OPT ? (vCust?.value || '').trim() : (vSel?.value ?? '');
+          model = mSel?.value === CUSTOM_OPT ? (mCust?.value || '').trim() : (mSel?.value ?? '');
+        }
         const api = {
           id: card.dataset.id || '1',
           name: card.querySelector('[data-field="name"]')?.value || '',
-          provider: card.querySelector('[data-field="provider"]')?.value || 'elevenlabs',
+          provider,
           apiKey: card.querySelector('[data-field="apiKey"]')?.value || '',
-          voiceId: card.querySelector('[data-field="voiceId"]')?.value || '',
-          model: card.querySelector('[data-field="model"]')?.value || '',
+          voiceId,
+          model,
           concurrency: parseInt(card.querySelector('[data-field="concurrency"]')?.value || '1', 10) || 1,
         };
         const secretInput = card.querySelector('[data-field="apiSecret"]');
