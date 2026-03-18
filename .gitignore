@@ -1,3 +1,6 @@
+# Local secrets (copy from .env.example)
+.env
+
 # Build output
 tts-benchmarker
 /go-example
