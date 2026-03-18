@@ -9,7 +9,7 @@ COPY . .
 RUN CGO_ENABLED=0 go build -o /tts-benchmarker .
 
 # Runtime stage (non-root for container hardening / Trivy DS002)
-FROM alpine:3.19
+FROM alpine:3.23
 RUN apk --no-cache add ca-certificates \
     && adduser -D -u 1000 appuser
 WORKDIR /app
