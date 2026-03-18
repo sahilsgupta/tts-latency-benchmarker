@@ -41,6 +41,32 @@ The key is sent only in that HTTP request and used once for the benchmark; it is
 
 ---
 
+## Tests
+
+No API keys or network calls to real TTS vendors are required for the default test suite.
+
+```bash
+go test ./... -count=1
+```
+
+- **`benchmark_test.go`** — `computeStats` (empty, single value, percentiles), `RunConcurrent` (success, all errors, concurrency clamp 1–50, panic recovery).
+- **`main_test.go`** — HTTP handlers: `/health`, `/`, `/app`, `/benchmark` (OPTIONS, bad JSON, empty APIs, unknown provider, success with injected mock provider, `FLY_REGION` in response).
+- **`providers/measure_test.go`** — `MeasureStream` against a local test server (streaming + HTTP error).
+
+## Running E2E Tests
+
+1. Copy `.env.example` to `.env`
+2. Fill in your API keys (leave any provider blank to skip that test)
+3. Run:
+
+   ```bash
+   make test-e2e
+   ```
+
+Each `TestE2E_*` calls the real provider API once with the phrase `"This is a latency test."` (equivalent to concurrency 1). Missing or empty env vars cause that test to be **skipped**, not failed. Requires network access.
+
+---
+
 ## Deploy to Fly.io
 
 1. **Install [flyctl](https://fly.io/docs/hub/installing/).**
@@ -66,6 +92,19 @@ The key is sent only in that HTTP request and used once for the benchmark; it is
    - Benchmark UI: `https://<your-app>.fly.dev/app`
 
 The frontend sends `POST /benchmark` with a `fly-prefer-region` header so each request hits the chosen region. API keys are sent in the request body only and are not stored on the server.
+
+---
+
+## Security CI (GitHub Actions)
+
+On push/PR to `main` or `master`:
+
+| Workflow | What it does |
+|----------|----------------|
+| [`.github/workflows/security.yml`](.github/workflows/security.yml) | **govulncheck**, **gosec**, **gitleaks**, **Trivy** (Dockerfile; fails on CRITICAL/HIGH misconfigs). |
+| [`.github/workflows/codeql.yml`](.github/workflows/codeql.yml) | **CodeQL** for Go → **Security → Code scanning** (enable in repo settings; see [SECURITY.md](SECURITY.md)). |
+
+**Dependabot** ([`.github/dependabot.yml`](.github/dependabot.yml)) opens weekly PRs for `go.mod`, GitHub Actions, and Docker. Turn on **Dependabot alerts** in repo settings — steps in [SECURITY.md](SECURITY.md).
 
 ---
 

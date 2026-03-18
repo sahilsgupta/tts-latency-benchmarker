@@ -7,7 +7,9 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"sync"
+	"time"
 
 	"tts-benchmarker/providers"
 )
@@ -26,12 +28,25 @@ func main() {
 	http.HandleFunc("/health", handleHealth)
 	http.HandleFunc("/benchmark", handleBenchmark)
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
+	portStr := os.Getenv("PORT")
+	if portStr == "" {
+		portStr = "8080"
 	}
-	log.Println("listening on", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	portNum, err := strconv.Atoi(portStr)
+	if err != nil || portNum < 1 || portNum > 65535 {
+		log.Fatal("invalid PORT: must be a decimal integer 1-65535")
+	}
+	addr := ":" + strconv.Itoa(portNum)
+	log.Printf("listening on %s", addr)
+
+	srv := &http.Server{
+		Addr:              addr,
+		ReadHeaderTimeout: 10 * time.Second,
+		ReadTimeout:       60 * time.Second,
+		WriteTimeout:      120 * time.Second,
+		IdleTimeout:       120 * time.Second,
+	}
+	log.Fatal(srv.ListenAndServe())
 }
 
 func handleRoot(w http.ResponseWriter, r *http.Request) {
@@ -55,12 +70,16 @@ func handleApp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.Write(data)
+	if _, err := w.Write(data); err != nil {
+		log.Printf("write app response: %v", err)
+	}
 }
 
 func handleHealth(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("ok"))
+	if _, err := w.Write([]byte("ok")); err != nil {
+		log.Printf("write health: %v", err)
+	}
 }
 
 type benchmarkRequest struct {
@@ -90,12 +109,16 @@ func handleBenchmark(w http.ResponseWriter, r *http.Request) {
 	var req benchmarkRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error": "invalid JSON"})
+		if encErr := json.NewEncoder(w).Encode(map[string]string{"error": "invalid JSON"}); encErr != nil {
+			log.Printf("encode error response: %v", encErr)
+		}
 		return
 	}
 	if len(req.APIs) == 0 {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error": "apis required"})
+		if encErr := json.NewEncoder(w).Encode(map[string]string{"error": "apis required"}); encErr != nil {
+			log.Printf("encode error response: %v", encErr)
+		}
 		return
 	}
 
@@ -108,7 +131,7 @@ func handleBenchmark(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 	for i := range req.APIs {
 		cfg := req.APIs[i]
-		provider, ok := getProvider(cfg.Provider)
+		provider, ok := resolveProvider(cfg.Provider)
 		if !ok {
 			results[i] = providers.BenchmarkResult{
 				APIConfigID: cfg.ID,
@@ -139,6 +162,9 @@ func setCORS(w http.ResponseWriter) {
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, fly-prefer-region")
 }
+
+// resolveProvider maps provider id to implementation; swap in tests via resolveProvider = ...
+var resolveProvider = getProvider
 
 func getProvider(p providers.SupportedProvider) (providers.TTSProvider, bool) {
 	switch p {
