@@ -34,7 +34,7 @@ jobs:
           go-version: "1.22"
           cache: true
       - run: go mod download
-      - uses: securego/gosec@v2.24.7
+      - uses: securego/gosec@v2.25.0
         with:
           args: "./..."
 
